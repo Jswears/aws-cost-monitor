@@ -1,8 +1,18 @@
 [
-    {
-        "InstanceId": "i-0baba49a0756acc41",
-        "State": "running",
-        "Type": "t3.micro",
-        "LaunchTime": "2025-07-29T12:15:37+00:00"
-    }
+  {
+    "InstanceId": "i-0baba49a0756acc41",
+    "State": "running",
+    "Type": "t3.micro",
+    "LaunchTime": "2025-07-29T12:15:37+00:00",
+    "AverageCPUUtilization": 0.35,
+    "Idle": true
+  },
+  {
+    "InstanceId": "i-088cb640c2e210c6e",
+    "State": "running",
+    "Type": "t3.micro",
+    "LaunchTime": "2025-07-29T13:05:55+00:00",
+    "AverageCPUUtilization": 4.65,
+    "Idle": true
+  }
 ]

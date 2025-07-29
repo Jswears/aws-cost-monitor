@@ -1,12 +1,44 @@
+import datetime
 import os
 import boto3
 import json
 
+
 ec2_client = boto3.client('ec2')
+cloudwatch_client = boto3.client('cloudwatch')
 
 output_dir = 'output'
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
+
+
+def get_average_cpu_utilization(instance_id):
+    end = datetime.datetime.utcnow()
+    start = end - datetime.timedelta(days=7)  # Last 7 days
+
+    try:
+        print(f"Fetching CPU utilization for instance {instance_id}...")
+        metrics = cloudwatch_client.get_metric_statistics(
+            Namespace='AWS/EC2',
+            MetricName='CPUUtilization',
+            Dimensions=[{'Name': 'InstanceId', 'Value': instance_id}],
+            StartTime=start,
+            EndTime=end,
+            Period=3600,
+            Statistics=['Average']
+        )
+
+        datapoints = metrics['Datapoints']
+        if not datapoints:
+            print(f"No CPU utilization data found for instance {instance_id}.")
+            return None
+
+        average_cpu = sum(dp['Average'] for dp in datapoints) / len(datapoints)
+        return round(average_cpu, 2)
+    except Exception as e:
+        print(
+            f"Error fetching CPU utilization for instance {instance_id}: {e}")
+        return None
 
 
 def scan_ec2_instances():
@@ -36,9 +68,20 @@ def check_ec2_state(instances):
         return
 
     for instance in instances:
+        cpu = get_average_cpu_utilization(instance['InstanceId'])
         if instance['State'] == 'running':
-            print(f"Instance {instance['InstanceId']} is running.")
+            instance['AverageCPUUtilization'] = cpu
+
+            if cpu is not None and cpu < 5.0:
+                instance['Idle'] = True
+                print(
+                    f"Instance {instance['InstanceId']} is idle with CPU utilization: {cpu}%")
+            else:
+                instance['Idle'] = False
+                print(
+                    f"Instance {instance['InstanceId']} is active with CPU: {cpu}%")
         else:
+            instance['Idle'] = False
             print(f"Instance {instance['InstanceId']} is not running.")
 
 
