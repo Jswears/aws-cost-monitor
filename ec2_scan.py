@@ -13,7 +13,7 @@ if not os.path.exists(output_dir):
 
 
 def get_average_cpu_utilization(instance_id):
-    end = datetime.datetime.utcnow()
+    end = datetime.datetime.now()
     start = end - datetime.timedelta(days=7)  # Last 7 days
 
     try:
