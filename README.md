@@ -21,12 +21,12 @@ python3 ec2_scan.py
 ## Output Example
 
 ```json
-        {
-            "InstanceId": "i-1234567890abcdef0",
-            "State": "running",
-            "CPU": 3.2,
-            "Idle": true
-        },
+{
+  "InstanceId": "i-1234567890abcdef0",
+  "State": "running",
+  "CPU": 3.2,
+  "Idle": true
+}
 ```
 
 ## Tech
