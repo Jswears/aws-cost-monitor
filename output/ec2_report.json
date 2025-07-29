@@ -1,0 +1,8 @@
+[
+    {
+        "InstanceId": "i-0baba49a0756acc41",
+        "State": "running",
+        "Type": "t3.micro",
+        "LaunchTime": "2025-07-29T12:15:37+00:00"
+    }
+]
