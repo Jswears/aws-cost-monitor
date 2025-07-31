@@ -3,6 +3,48 @@ import os
 import boto3
 import json
 import argparse
+from twilio.rest import Client
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+
+def send_whatsapp_message(instances):
+    idle_instances = [i for i in instances if i.get('Idle')]
+    if not idle_instances:
+        print("No idle instances to report.")
+        return
+
+    message = (
+        "🚨 *Idle EC2 Instances Detected* 🚨\n\n"
+        "The following EC2 instances are idle based on the CPU utilization threshold:\n\n"
+    )
+    for i in idle_instances:
+        message += (
+            f"• *Instance ID:* {i['InstanceId']}\n"
+            f"  *CPU Utilization:* {i['AverageCPUUtilization']}%\n"
+            f"  *State:* {i['State']}\n"
+            f"  *Type:* {i['Type']}\n"
+            f"  *Launch Time:* {i['LaunchTime']}\n\n"
+        )
+    message += "Please review these instances to optimize costs. 💡"
+
+    # Send the message via WhatsApp
+    print(f"Sending WhatsApp message:\n{message}")
+    try:
+        client = Client(
+            os.getenv('TWILIO_ACCOUNT_SID'),
+            os.getenv('TWILIO_AUTH_TOKEN')
+        )
+        message = client.messages.create(
+            body=message,
+            from_=os.getenv('TWILIO_WHATSAPP_FROM'),
+            to=os.getenv('WHATSAPP_TO') or ""
+        )
+        print(f"WhatsApp message sent successfully: {message.sid}")
+    except Exception as e:
+        print(f"Error sending WhatsApp message: {e}")
 
 
 def parse_args():
@@ -113,6 +155,7 @@ def main():
     instances = scan_ec2_instances()
     check_ec2_state(instances)
     save_ec2_instances_report(instances)
+    send_whatsapp_message(instances)
 
 
 if __name__ == "__main__":

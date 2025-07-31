@@ -8,5 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+.env
+# Logs
+*.log
+logs/
 output/
-outputoutput/
