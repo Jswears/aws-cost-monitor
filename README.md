@@ -10,6 +10,20 @@ Scan an AWS account to identify potentially idle or wasteful resources, such as 
 - Fetch average CPU usage from CloudWatch.
 - Flag idle instances (e.g. CPU < 5% for 7 days).
 - Save report to `output/ec2_report.json`.
+- Command-line interface for easy execution.
+
+## 🧠 CLI Arguments
+
+| Option        | Description                        |
+| ------------- | ---------------------------------- |
+| `--region`    | AWS region (default: eu-central-1) |
+| `--threshold` | Idle CPU threshold (default: 5.0%) |
+
+## 🚀 Example Usage
+
+```bash
+python3 ec2_monitor.py --region us-west-1 --threshold 3.5
+```
 
 ## How to Run
 

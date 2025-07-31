@@ -2,10 +2,24 @@ import datetime
 import os
 import boto3
 import json
+import argparse
 
 
-ec2_client = boto3.client('ec2')
-cloudwatch_client = boto3.client('cloudwatch')
+def parse_args():
+    parser = argparse.ArgumentParser(description='AWS EC2 Cost Monitor')
+    parser.add_argument(
+        '--region', type=str, default='eu-central-1', help='AWS region to use'
+    )
+    parser.add_argument('--threshold', type=float, default=5.0,
+                        help='CPU utilization threshold for idle instances')
+    args = parser.parse_args()
+    return args
+
+
+args = parse_args()
+
+ec2_client = boto3.client('ec2', region_name=args.region)
+cloudwatch_client = boto3.client('cloudwatch', region_name=args.region)
 
 output_dir = 'output'
 if not os.path.exists(output_dir):
@@ -69,24 +83,24 @@ def check_ec2_state(instances):
 
     for instance in instances:
         cpu = get_average_cpu_utilization(instance['InstanceId'])
-        if instance['State'] == 'running':
-            instance['AverageCPUUtilization'] = cpu
+        instance['AverageCPUUtilization'] = cpu
 
-            if cpu is not None and cpu < 5.0:
-                instance['Idle'] = True
-                print(
-                    f"Instance {instance['InstanceId']} is idle with CPU utilization: {cpu}%")
-            else:
-                instance['Idle'] = False
-                print(
-                    f"Instance {instance['InstanceId']} is active with CPU: {cpu}%")
-        else:
+        if instance['State'] != 'running':
             instance['Idle'] = False
             print(f"Instance {instance['InstanceId']} is not running.")
+            continue
+
+        if cpu is not None and cpu < args.threshold:
+            instance['Idle'] = True
+            print(f"Instance {instance['InstanceId']} is idle (CPU: {cpu}%)")
+        else:
+            instance['Idle'] = False
+            print(f"Instance {instance['InstanceId']} is active (CPU: {cpu}%)")
 
 
 def save_ec2_instances_report(instances):
-    output_file = os.path.join(output_dir, 'ec2_report.json')
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_file = os.path.join(output_dir, f'ec2_report_{timestamp}.json')
     try:
         with open(output_file, 'w') as f:
             json.dump(instances, f, indent=4)
