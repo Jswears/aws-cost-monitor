@@ -1,4 +1,4 @@
-# ☁️ AWS EC2 Cost Monitor (Python + CloudWatch + WhatsApp Alerts)
+# ☁️ AWS EC2 Cost Monitor · Python + CloudWatch + WhatsApp Alerts
 
 A Python-based tool that scans your AWS EC2 instances, checks average CPU usage over the past 7 days via CloudWatch, identifies idle instances, and sends automated WhatsApp alerts using Twilio.
 
@@ -6,19 +6,19 @@ A Python-based tool that scans your AWS EC2 instances, checks average CPU usage 
 
 ## 🎯 Goal
 
-Scan an AWS account to detect potentially idle EC2 instances based on average CPU usage and notify the user via WhatsApp for cost-saving opportunities.
+Scan your AWS EC2 infrastructure to identify idle instances based on average CPU usage, then notify you via WhatsApp — helping reduce unnecessary costs.
 
 ---
 
 ## ✅ Features
 
-- 🔍 List EC2 instances and their states
-- 📊 Fetch 7-day average CPU from CloudWatch
-- 💤 Identify idle instances (e.g., CPU < 5%)
-- 📝 Save structured report to `output/ec2_report_<timestamp>.json`
-- 💬 WhatsApp alerts using Twilio Sandbox API
-- 🧩 CLI arguments for region and CPU threshold
-- 🔐 Uses `.env` for secret management
+- 🔍 Lists EC2 instances and their states
+- 📊 Fetches 7-day average CPU from CloudWatch
+- 💤 Detects idle instances (e.g., CPU < 5%)
+- 📝 Saves structured reports to `output/` with timestamps
+- 💬 Sends WhatsApp alerts using Twilio API
+- 🧩 Supports CLI arguments for region and threshold
+- 🔐 Loads secrets from `.env` locally or Secrets Manager in Lambda
 
 ---
 
@@ -27,9 +27,9 @@ Scan an AWS account to detect potentially idle EC2 instances based on average CP
 - Python 3
 - AWS Boto3 SDK
 - AWS EC2 + CloudWatch
+- SAM (Serverless Application Model) CLI
 - Twilio API (WhatsApp)
 - `argparse`, `dotenv`, `json`
-- [`uv`](https://github.com/astral-sh/uv) for fast virtualenv + dependency management
 
 ---
 
@@ -42,15 +42,76 @@ Scan an AWS account to detect potentially idle EC2 instances based on average CP
 
 ---
 
-## 🚀 Example Usage
+## 🚀 Usage
+
+### 🖥️ Local Execution
+
+Ensure the report-saving lines in `main.py` are **uncommented**, and the `.env` loader in `messaging.py` is enabled.
+
+Install dependencies:
 
 ```bash
-python3 ec2_monitor.py --region us-west-2 --threshold 3.5
+pip install -r requirements.txt
+```
+
+Run the script:
+
+```bash
+python3 src/main.py --region eu-central-1 --threshold 5.0
 ```
 
 ---
 
+### ☁️ Lambda Deployment
+
+To deploy this as a serverless function using AWS SAM:
+
+---
+
+#### 1️⃣ Create Secrets in AWS Secrets Manager
+
+First, make the script executable:
+
+```bash
+chmod +x create_secrets
+```
+
+Then store Twilio credentials securely:
+
+```bash
+./create_secrets <TWILIO_ACCOUNT_SID> <TWILIO_AUTH_TOKEN> <TWILIO_WHATSAPP_FROM> <WHATSAPP_TO>
+```
+
+---
+
+#### 2️⃣ Install Python Dependencies for Lambda
+
+```bash
+pip install -r requirements.txt -t dependencies/python
+```
+
+---
+
+#### 3️⃣ Build and Deploy via SAM CLI
+
+```bash
+sam build
+sam deploy --guided
+```
+
+> 💡 Make sure your AWS CLI is configured with sufficient permissions.
+
+---
+
 ## 🔧 Installation
+
+### Prerequisites
+
+- Python 3.12
+- AWS CLI configured with EC2/CloudWatch access
+- Twilio account with WhatsApp sandbox
+
+---
 
 ### 1. Clone the Repo
 
@@ -60,16 +121,6 @@ cd aws-cost-monitor
 ```
 
 ### 2. Install Dependencies
-
-#### 🌀 Option A: Using `uv` (recommended)
-
-```bash
-uv venv
-source .venv/bin/activate
-uv add boto3 twilio python-dotenv
-```
-
-#### 🧪 Option B: Using `pip`
 
 ```bash
 python3 -m venv venv
@@ -87,15 +138,17 @@ pip install -r requirements.txt
 aws configure
 ```
 
+---
+
 ### 2. Prepare Twilio WhatsApp Sandbox
 
 - Sign up at [twilio.com](https://www.twilio.com/)
 - Join the [Twilio WhatsApp sandbox](https://www.twilio.com/whatsapp)
-- Link your phone by sending the join code via WhatsApp
+- Link your phone using the join code via WhatsApp
+
+---
 
 ### 3. Create `.env` File
-
-Use the `.env.example` as a reference:
 
 ```env
 TWILIO_ACCOUNT_SID=your_sid
@@ -104,7 +157,7 @@ TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
 WHATSAPP_TO=whatsapp:+YOUR_PHONE_NUMBER
 ```
 
-> ⚠️ Do not commit your `.env` file — keep it in your `.gitignore`.
+> ⚠️ **Do not commit your `.env` file.**
 
 ---
 
@@ -121,6 +174,8 @@ WHATSAPP_TO=whatsapp:+YOUR_PHONE_NUMBER
 }
 ```
 
+> 💡 Reports are saved to `output/` with timestamped filenames.
+
 ---
 
 ## 🧠 What I Learned
@@ -128,25 +183,24 @@ WHATSAPP_TO=whatsapp:+YOUR_PHONE_NUMBER
 - Using AWS SDK (Boto3) for EC2 and CloudWatch
 - Metric-based decision making for cloud cost optimization
 - Building CLI tools with `argparse`
-- Secure alerting integration with Twilio and WhatsApp
-- Managing Python environments and dependencies with `uv`
-- Clean code structure, error handling, and modularization
+- Secure integration of Twilio + WhatsApp alerts
+- Clean modular architecture and error handling
 
 ---
 
 ## 📈 Coming Soon
 
-- Email and/or SNS alerts
-- Lambda deployment option
-- Scheduled execution with cron or GitHub Actions
-- Support for other idle resources (RDS, EBS, etc.)
+- ✅ Email and/or SNS alerts
+- ✅ Support for S3-based report storage
+- 🔄 Scheduled executions via cron or GitHub Actions
+- 🗃️ Support for idle detection in other resources (RDS, EBS, etc.)
 
 ---
 
 ## 🗂️ .gitignore (Recommended)
 
-```
-.venv/
+```gitignore
+venv/
 .env
 __pycache__/
 output/

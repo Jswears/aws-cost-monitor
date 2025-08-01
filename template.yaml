@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  EC2CostMonitorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main.lambda_handler
+      Runtime: python3.12
+      CodeUri: src/
+      Timeout: 60
+      MemorySize: 256
+      Policies:
+        - AmazonEC2ReadOnlyAccess
+        - CloudWatchReadOnlyAccess
+        - SecretsManagerReadWrite
+      Layers:
+        - !Ref DependenciesLayer
+      Environment:
+        Variables:
+          TWILIO_SECRET_NAME: TwilioSecrets
+
+  DependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: EC2CostMonitorDependencies
+      Description: Dependencies for EC2 Cost Monitor Lambda function
+      ContentUri: dependencies/
+      CompatibleRuntimes:
+        - python3.12
+      LicenseInfo: "MIT"

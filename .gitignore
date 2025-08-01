@@ -8,8 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+venv/
+venv
 .env
 # Logs
 *.log
 logs/
 output/
+dependencies/
+.aws-sam
