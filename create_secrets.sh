@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Create a new secret in AWS Secrets Manager with Twilio credentials
-# Usage: ./create_secrets.sh <TWILIO_ACCOUNT_SID> <TWILIO_AUTH_TOKEN> <TWILIO_WHATSAPP_FROM> <WHATSAPP_TO>
 
 if [ "$#" -ne 4 ]; then
     echo "Usage: $0 <TWILIO_ACCOUNT_SID> <TWILIO_AUTH_TOKEN> <TWILIO_WHATSAPP_FROM> <WHATSAPP_TO>"
