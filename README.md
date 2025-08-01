@@ -86,6 +86,13 @@ Then store Twilio credentials securely:
 
 #### 2️⃣ Install Python Dependencies for Lambda
 
+Create the directories:
+```bash
+mkdir -p dependencies/python
+```
+
+Then install the dependencies for the layer
+
 ```bash
 pip install -r requirements.txt -t dependencies/python
 ```
