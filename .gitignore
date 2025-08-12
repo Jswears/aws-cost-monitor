@@ -17,3 +17,4 @@ logs/
 output/
 dependencies/
 .aws-sam
+samconfig.toml
