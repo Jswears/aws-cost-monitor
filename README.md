@@ -1,6 +1,7 @@
 # ☁️ AWS EC2 Cost Monitor · Python + CloudWatch + WhatsApp Alerts
 
 A Python-based tool that scans your AWS EC2 instances, checks average CPU usage over the past 7 days via CloudWatch, identifies idle instances, and sends automated WhatsApp alerts using Twilio.
+![Architecture Diagram](cost-monitor-architecture-diagram.png)
 
 ---
 

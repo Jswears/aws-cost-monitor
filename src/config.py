@@ -1,5 +1,4 @@
 import boto3
-from botocore.exceptions import ClientError
 import os
 import json
 
@@ -8,7 +7,7 @@ def get_secret(secret_name):
     secret_name = os.environ.get(secret_name, 'TwilioSecrets')
     region_name = "eu-central-1"
 
-    session = boto3.session.Session()
+    session = boto3.Session()
     client = session.client(
         service_name='secretsmanager',
         region_name=region_name,
